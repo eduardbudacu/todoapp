@@ -1,60 +1,57 @@
-import { Router, type Request, type Response } from 'express';
-import { v4 as uuidv4 } from 'uuid';
+import { Router, type Request, type Response, type RequestHandler } from 'express';
+import { myDataSource } from '../database';
+import { Todo } from '../entities/todo';
+import { findAllTodos, findTodoById } from '../services/todos';
+
 const todos = Router();
 
-const todoItems = [{
-  id: '123e4567-e89b-12d3-a456-426614174000',
-  description: 'Connect bank account',
-  dueDate: '2023-12-10T12:00:00',
-  completed: false,
-  deleted: false
-}, {
-  id: '123e4567-e89b-12d3-a456-426614174001',
-  description: 'Configure ERP',
-  dueDate: '2023-12-10T12:00:00',
-  completed: false,
-  deleted: false
-}, {
-  id: '123e4567-e89b-12d3-a456-426614174002',
-  description: 'Setup company details',
-  dueDate: '2023-12-10T12:00:00',
-  completed: false,
-  deleted: false
-}];
+type LoggedInRequest = Request & { user: { id: string } };
 
-todos.get('/todos', (req: Request, res: Response) => {
+todos.get('/todos', (async (req: LoggedInRequest, res: Response) => {
+  const todoItems = await findAllTodos(req.user.id);
   res.status(200).json(todoItems);
-});
+}) as RequestHandler);
 
-todos.post('/todos', (req: Request, res: Response) => {
-  const todoItem = req.body;
-  todoItem.id = uuidv4();
-  todoItem.deleted = false;
-  todoItems.push(todoItem);
-  res.status(201).json(todoItem);
-});
-
-todos.patch('/todos/:id', (req: Request, res: Response) => {
-  const todoItem = todoItems.find(item => item.id === req.params.id);
-  if (todoItem === undefined) {
-    return res.status(404).json({ message: 'Todo item not found' });
+todos.post('/todos', (async (req: LoggedInRequest, res: Response) => {
+  const todoItem = {
+    description: req.body.description,
+    user: {
+      id: req.user.id
+    }
+  };
+  const todo = myDataSource.getRepository(Todo).create(todoItem);
+  const result = await myDataSource.getRepository(Todo).save(todo);
+  if (result === null) {
+    res.status(500).json({ message: 'Internal server error' });
+    return;
   }
-  const keys = ['dueDate', 'completed', 'description'];
+  res.status(201).json(result);
+}) as RequestHandler);
+
+todos.patch('/todos/:id', (async (req: LoggedInRequest, res: Response) => {
+  const todoItem = await findTodoById(req.params.id, req.user.id);
+  if (todoItem === null) {
+    res.status(404).json({ message: 'Todo item not found' });
+    return;
+  }
+  const keys = ['description', 'dueDate', 'completed'];
   for (const key of keys) {
     if (req.body[key] !== undefined) {
       todoItem[key] = req.body[key];
     }
   }
-  res.status(200).json(todoItem);
-});
+  const result = await myDataSource.getRepository(Todo).save(todoItem);
+  res.status(200).json(result);
+}) as RequestHandler);
 
-todos.delete('/todos/:id', (req: Request, res: Response) => {
-  const todoItem = todoItems.find(item => item.id === req.params.id);
-  if (todoItem === undefined) {
-    return res.status(404).json({ message: 'Todo item not found' });
+todos.delete('/todos/:id', (async (req: LoggedInRequest, res: Response) => {
+  const todoItem = await findTodoById(req.params.id, req.user.id);
+  if (todoItem === null) {
+    res.status(404).json({ message: 'Todo item not found' });
+    return;
   }
-  todoItem.deleted = true;
+  await myDataSource.getRepository(Todo).softRemove(todoItem);
   res.status(204).end();
-});
+}) as RequestHandler);
 
 export default todos;
