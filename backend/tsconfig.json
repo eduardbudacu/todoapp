@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+        "target": "es5",
+        "outDir": "./dist",
+        "rootDir": "./src",
+        "module": "CommonJS",
+        "sourceMap": true,
+        "esModuleInterop": true,
+        "strictNullChecks": true,
+        "types": ["jest"],
+    },
+    
+    "include": ["./src/**/*"],
+    "exclude": ["node_modules"],
+    "typeAcquisition": { "include": ["jest"] },
+}
