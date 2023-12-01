@@ -11,7 +11,7 @@ auth.post('/login', (async (req: Request, res: Response) => {
   if (results !== null) {
     try {
       const result = await comparePasswords(req.body.password, results.password);
-      if (result === true) {
+      if (result) {
         const response = {
           token: createJWT(results)
         };
@@ -28,7 +28,6 @@ auth.post('/login', (async (req: Request, res: Response) => {
 }) as RequestHandler);
 
 auth.post('/users', (async (req: Request, res: Response) => {
-  console.log(req.body);
   const userExists = await myDataSource.getRepository(User).findOneBy({
     email: req.body.email
   });
