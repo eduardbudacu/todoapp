@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useContext, useState} from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
@@ -6,21 +6,55 @@ import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
-import { Link } from "react-router-dom";
+import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
+import { AuthContext } from '../context/AuthContext';
+import { Alert } from '@mui/material';
+
 
 export default function SignIn() {
-  const handleSubmit = (event) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { setToken, authenticated, setAuthenticated} = useContext(AuthContext);
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+    try {
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        body: JSON.stringify({
+          email: data.get('email'),
+          password: data.get('password'),
+        }),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      if (response.ok) {
+        const responseData = await response.json()
+        setToken(responseData.token);
+        setAuthenticated(true);
+        navigate('/tasks');
+      } else {
+        const responseData = await response.json();
+        setError(responseData.message);
+        setIsLoading(false);
+      }
+    } catch (error) {
+      setError(error.message);
+      setIsLoading(false);
+    }
+      
+
   };
+
+  if (isLoading) return <p>Loading...</p>;
 
   return (
     
         <>
+        {authenticated ? <Navigate to="/tasks" /> : null}
                 <Box
           sx={{
             marginTop: 8,
@@ -35,6 +69,8 @@ export default function SignIn() {
           <Typography component="h1" variant="h5">
             Sign in
           </Typography>
+          {location.state?.message ? <Alert severity="success">{location.state?.message}</Alert> : null}
+          
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
             <TextField
               margin="normal"
@@ -56,6 +92,7 @@ export default function SignIn() {
               id="password"
               autoComplete="current-password"
             />
+            {error ? <Alert severity="error">{error}</Alert> : null}
             <Button
               type="submit"
               fullWidth

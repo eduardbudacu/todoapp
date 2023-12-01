@@ -1,23 +1,50 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
+import { Alert } from '@mui/material';
 
 
 export default function SignUp() {
-  const handleSubmit = (event) => {
+  const navigate = useNavigate();
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+    setIsLoading(true);
+    try {
+      const response = await fetch('/api/users', {
+        method: 'POST',
+        body: JSON.stringify({
+          email: data.get('email'),
+          password: data.get('password'),
+          firstName: data.get('firstName'),
+          lastName: data.get('lastName'),
+        }),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      if (response.ok) {
+        navigate('/', {state: {message: 'Your account was created. Please login'}});
+      } else {
+        const data = await response.json();
+        setError(data.message);
+        setIsLoading(false);
+      }
+    } catch (error) {
+      setError(error.message);
+      setIsLoading(false);
+    }
   };
+
+  if (isLoading) return <p>Loading...</p>;
 
   return (
         <>
@@ -80,6 +107,7 @@ export default function SignUp() {
                 />
               </Grid>
             </Grid>
+            {error ? <Alert severity="error">{error}</Alert> : null}
             <Button
               type="submit"
               fullWidth
