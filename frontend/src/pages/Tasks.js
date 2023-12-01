@@ -12,7 +12,6 @@ export default function Tasks() {
     if (error) return <p>Error fetching tasks: {error.message}</p>;
 
     return (
-        
         <div>
             <h1>Tasks</h1>
             <ul>
