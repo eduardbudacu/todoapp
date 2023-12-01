@@ -9,11 +9,18 @@ auth.post('/login', (async (req: Request, res: Response) => {
     email: req.body.email
   });
   if (results !== null) {
-    if (comparePasswords(req.body.password, results.password)) {
-      const response = {
-        token: createJWT(results)
-      };
-      res.status(200).json(response);
+    try {
+      const result = await comparePasswords(req.body.password, results.password);
+      if (result === true) {
+        const response = {
+          token: createJWT(results)
+        };
+        res.status(200).json(response);
+      } else {
+        throw Error('Invalid password');
+      }
+    } catch (err) {
+      res.status(401).json({ message: 'Unauthorized' });
     }
   } else {
     res.status(401).json({ message: 'Unauthorized' });
@@ -21,6 +28,7 @@ auth.post('/login', (async (req: Request, res: Response) => {
 }) as RequestHandler);
 
 auth.post('/users', (async (req: Request, res: Response) => {
+  console.log(req.body);
   const userExists = await myDataSource.getRepository(User).findOneBy({
     email: req.body.email
   });

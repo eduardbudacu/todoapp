@@ -2,8 +2,15 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { type User } from '../entities/user';
 
-export const comparePasswords = (password: string, hash: string): boolean => {
-  return bcrypt.compare(password, hash);
+export const comparePasswords = async (password: string, hash: string): Promise<boolean> => {
+  return await new Promise((resolve, reject) => {
+    bcrypt.compare(password, hash, function (err, result: boolean) {
+      if (err !== undefined) {
+        reject(err);
+      }
+      resolve(result);
+    });
+  });
 };
 
 export const hashPassword = async (password): Promise<string> => {
