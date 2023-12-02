@@ -13,7 +13,7 @@ export const comparePasswords = async (password: string, hash: string): Promise<
   });
 };
 
-export const hashPassword = async (password): Promise<string> => {
+export const hashPassword = async (password: string): Promise<string> => {
   return bcrypt.hash(password, 5);
 };
 
@@ -40,7 +40,7 @@ export const protect = (req, res, next): void => {
 
   if (token === undefined) {
     res.status(401);
-    res.json({ message: 'not valid token' });
+    res.json({ message: 'invalid token' });
     return;
   }
 
@@ -51,6 +51,6 @@ export const protect = (req, res, next): void => {
   } catch (e) {
     console.error(e);
     res.status(401);
-    res.json({ message: 'not valid token' });
+    res.json({ message: 'invalid token' });
   }
 };
