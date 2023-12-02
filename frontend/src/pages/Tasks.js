@@ -4,8 +4,8 @@ import { AuthContext } from '../context/AuthContext';
 import { Navigate } from 'react-router-dom';
 
 export default function Tasks() {
-    const { token, authenticated } = useContext(AuthContext);
-    const { tasks, isLoading, error } = useFetchTodos(token);
+    const { authenticated } = useContext(AuthContext);
+    const { tasks, isLoading, error } = useFetchTodos();
 
     if (!authenticated) return <Navigate to='/' />;
     if (isLoading) return <p>Loading...</p>;

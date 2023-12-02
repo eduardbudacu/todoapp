@@ -46,6 +46,7 @@ export default function SignIn() {
       })
       if (response.ok) {
         const responseData = await response.json()
+        localStorage.setItem('token', responseData.token);
         setToken(responseData.token);
         setAuthenticated(true);
         navigate('/tasks');
