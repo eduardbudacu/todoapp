@@ -12,6 +12,7 @@ module.exports = {
         tsconfigRootDir: __dirname,
     },
     "rules": {
-        "@typescript-eslint/semi": [2, "always"]
+        "@typescript-eslint/semi": [2, "always"],
+        "@typescript-eslint/no-misused-promises": "off"
     }
 }

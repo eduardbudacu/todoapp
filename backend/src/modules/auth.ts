@@ -49,7 +49,6 @@ export const protect = (req, res, next): void => {
     req.user = user;
     next();
   } catch (e) {
-    console.error(e);
     res.status(401);
     res.json({ message: 'invalid token' });
   }

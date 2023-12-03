@@ -1,4 +1,5 @@
 import { DataSource } from 'typeorm';
+import { join } from 'path';
 
 export const myDataSource = new DataSource({
   type: 'mysql',
@@ -7,7 +8,7 @@ export const myDataSource = new DataSource({
   username: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_DATABASE,
-  entities: ['src/entities/*.ts'],
+  entities: [join(__dirname, 'entities', '*.{ts,js}')],
   logging: true,
   synchronize: true
 });

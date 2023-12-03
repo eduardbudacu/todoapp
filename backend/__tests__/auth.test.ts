@@ -20,7 +20,7 @@ jest.mock('typeorm', () => {
               lastName: 'Budacu'
             });
           }
-          return await Promise.resolve(null); // User not found
+          return await Promise.resolve(null);
         }),
         create: jest.fn().mockImplementation((user) => user),
         save: jest.fn().mockResolvedValue({
