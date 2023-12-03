@@ -30,7 +30,7 @@ function useFetchTodos() {
             });
     }, [token]);
 
-    return { tasks, isLoading, error };
+    return { tasks, isLoading, error, setTasks};
 }
 
 export default useFetchTodos;
