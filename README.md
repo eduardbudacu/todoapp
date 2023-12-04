@@ -41,7 +41,7 @@ For testing I've ensured coverage of all endpoints with integration tests. All d
 
 ## Conclusions and improvements
 
-Overall I've managed to accomplish both goals during this assignment. Setting up all the libraries from scratch gave me a better understanding of the entire stack, but it also surfaced impediments that gave me less time to focus on features. One impediment was around the use of context in react for authentication, that I haven't setup before from scratch. The second was around mocking the internals of TypeORM. 
+Overall I've managed to accomplish both goals during this assignment. Setting up all the libraries from scratch gave me a better understanding of the entire stack, but it also surfaced impediments that gave me less time to focus on features. One impediment was around the use of context in react for authentication, that I haven't setup before from scratch. The second was around mocking the internals of TypeORM. I've managed to overcome both and submited a working version of the application with good test coverage.
 
 An alternative approach would have been to rely on frameworks like NestJS and NextJS that already handle the structure of the project, the logic for authentication and provide a better testing framework. 
 
