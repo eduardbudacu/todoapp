@@ -29,7 +29,7 @@ The application is organized in pages and small components. For handling shared 
 
 ### Backend stack
 
-O the backend I’ve used TypeScript with ExpressJS for exposing the API endpoints, TypeORM for interacting with the database, Jest and supertest for unit testing. For security features I’ve included bcrypt and jsonwebtoken.
+O the backend I’ve used TypeScript with ExpressJS for exposing the API endpoints, TypeORM for interacting with the MySQL database, Jest and supertest for unit testing. For security features I’ve included bcrypt and jsonwebtoken.
 
 The backend is structured by layers with specific concerns. The routers define the endpoints and delegate requests to handlers defined in controllers. The controllers are responsible for parsing request data and preparing the response. Services contain the logic of the application and call the models for data operations. The functions related with security were defined i a module to ensure separation of application logic.
 
